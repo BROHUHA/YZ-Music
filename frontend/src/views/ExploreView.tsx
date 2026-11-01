@@ -147,7 +147,14 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
 
   const contentShelves = useMemo(() => {
     return shelves.filter(
-      (s) => s !== navShelf && s.items.some((it) => it.thumbnailUrl != null)
+      (s) =>
+        s !== navShelf &&
+        s.items.length > 0 &&
+        (s.items.some((it) => it.thumbnailUrl != null) ||
+          s.type === 'MOOD_GENRE' ||
+          s.title.toLowerCase().includes('mood') ||
+          s.title.toLowerCase().includes('genre') ||
+          s.items.some((it) => it.stripeColor != null || it.browseId?.includes('moods_and_genres')))
     );
   }, [shelves, navShelf]);
 
@@ -269,7 +276,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
             <div key={idx} className="flex items-center shrink-0 snap-start">
               <button
                 onClick={() => {
-                  if (onOpenDetail) {
+                  if (activeFilter === chip.category && onOpenDetail) {
                     onOpenDetail(
                       chip.browseId,
                       chip.params,
@@ -278,8 +285,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
                       null,
                       chip.category === 'Charts' ? 'CHARTS' : 'CATEGORY'
                     );
+                  } else {
+                    setActiveFilter(chip.category);
                   }
-                  setActiveFilter(chip.category);
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 group active:scale-95 shadow-sm ${
                   isActive

@@ -5,11 +5,23 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/innertube/(.*)",
+      "destination": "/api/innertube/[...path]?path=$1"
+    },
+    {
+      "source": "/api/jiosaavn",
+      "destination": "/api/jiosaavn"
+    },
+    {
       "source": "/api/parties/(.*)",
       "destination": "https://yz-music-party.onrender.com/api/parties/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/api/lrclib/(.*)",
+      "destination": "https://lrclib.net/api/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

@@ -15,7 +15,11 @@ export default async function handler(req, res) {
 
   try {
     const rawPath = req.query.path;
-    const endpoint = Array.isArray(rawPath) ? rawPath.join('/') : (rawPath || '');
+    let endpoint = Array.isArray(rawPath) ? rawPath.join('/') : (rawPath || '');
+    if (!endpoint && req.url) {
+      const cleanUrl = req.url.split('?')[0];
+      endpoint = cleanUrl.replace(/^\/api\/innertube\/?/, '');
+    }
     const targetUrl = `https://music.youtube.com/youtubei/v1/${endpoint}`;
 
     const authHeader = req.headers['authorization'];
