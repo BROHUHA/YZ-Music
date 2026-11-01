@@ -339,7 +339,46 @@ export class InnertubeService {
     const exploreShelves = exploreRaw.status === 'fulfilled' ? this.parseShelves(exploreRaw.value) : [];
     const chartsShelves = chartsRaw.status === 'fulfilled' ? this.parseShelves(chartsRaw.value) : [];
 
-    return [...exploreShelves, ...chartsShelves];
+    const merged = [...exploreShelves, ...chartsShelves];
+
+    // Ensure Top 100 & Viral Charts are ALWAYS present (exact match of YtMusicRepository.kt:225)
+    const hasCharts = merged.some((s) => /chart|top 100|viral/i.test(s.title));
+    if (!hasCharts) {
+      merged.push({
+        title: 'Top 100 & Viral Charts',
+        subtitle: 'Official charts updated daily',
+        strapline: 'TOP 100',
+        type: 'DEFAULT' as any,
+        items: [
+          {
+            title: 'Top 100: Global',
+            subtitle: 'The most played songs globally',
+            thumbnailUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=544&h=544&fit=crop',
+            browseId: 'VLPL4fGSI46T250j298PrMtcms0bhcpTrU0S',
+          },
+          {
+            title: 'Viral 50: Global',
+            subtitle: 'Songs trending right now',
+            thumbnailUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=544&h=544&fit=crop',
+            browseId: 'VLPL4fGSI46T251uWl8B_Wf3g7f0o4V4jH1T',
+          },
+          {
+            title: 'Top 100: Music Videos',
+            subtitle: 'Most viewed music videos',
+            thumbnailUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=544&h=544&fit=crop',
+            browseId: 'VLPL4fGSI46T252jA06tkyvPj94Kk3m33u4e',
+          },
+          {
+            title: 'Top 100: United States',
+            subtitle: 'The biggest hits in the US',
+            thumbnailUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=544&h=544&fit=crop',
+            browseId: 'VLPL4fGSI46T251j4R_qV7jWv8K_8t_aHlY_',
+          },
+        ],
+      });
+    }
+
+    return merged;
   }
 
   /**

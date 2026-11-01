@@ -155,7 +155,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
   const filteredShelves = useMemo(() => {
     if (activeFilter === 'All') return contentShelves;
 
-    return contentShelves.filter((s) => {
+    const filtered = contentShelves.filter((s) => {
       const titleLower = s.title.toLowerCase();
       const straplineLower = (s.strapline || '').toLowerCase();
       const isMood =
@@ -167,7 +167,11 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
         s.type === 'CHART_VIDEOS' ||
         s.type === 'RANKED' ||
         titleLower.includes('chart') ||
-        titleLower.includes('top');
+        titleLower.includes('top') ||
+        titleLower.includes('viral') ||
+        titleLower.includes('hit') ||
+        straplineLower.includes('chart') ||
+        straplineLower.includes('top');
       const isTrending =
         titleLower.includes('trending') ||
         straplineLower.includes('trending') ||
@@ -192,7 +196,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
           return true;
       }
     });
-  }, [shelves, activeFilter]);
+
+    return filtered.length > 0 ? filtered : contentShelves;
+  }, [contentShelves, activeFilter]);
 
   if (loading) {
     return (
@@ -263,7 +269,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
             <div key={idx} className="flex items-center shrink-0 snap-start">
               <button
                 onClick={() => {
-                  if (isActive && onOpenDetail) {
+                  if (onOpenDetail) {
                     onOpenDetail(
                       chip.browseId,
                       chip.params,
@@ -272,9 +278,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onOpenDetail }) => {
                       null,
                       chip.category === 'Charts' ? 'CHARTS' : 'CATEGORY'
                     );
-                  } else {
-                    setActiveFilter(chip.category);
                   }
+                  setActiveFilter(chip.category);
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 group active:scale-95 shadow-sm ${
                   isActive
