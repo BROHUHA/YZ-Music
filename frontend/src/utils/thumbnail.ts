@@ -32,7 +32,8 @@ export function cleanThumbnailUrl(url?: string | null, videoId?: string | null):
   if (url.includes('ytimg.com')) {
     // Fix known broken IDs or casing
     let fixedUrl = url
-      .replace('VAdGW7QDJUI', 'VAdGW7QDJiU')
+      .replace('VAdGW7QDJUI', 'Wy59JHkWx_A')
+      .replace('VAdGW7QDJiU', 'Wy59JHkWx_A')
       .replace('V9PVRfjEBTI', 'LK7-_dgAVQE');
 
     if (fixedUrl.includes('hqdefault.jpg')) {
@@ -43,3 +44,4 @@ export function cleanThumbnailUrl(url?: string | null, videoId?: string | null):
 
   return url;
 }
+

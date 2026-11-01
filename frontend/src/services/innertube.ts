@@ -184,8 +184,10 @@ export class InnertubeService {
       body.params = params;
     }
 
-    const [homeRaw, historySongs] = await Promise.allSettled([
+    const [homeRaw, newReleasesRaw, chartsRaw, historySongs] = await Promise.allSettled([
       this.post('browse', body),
+      !params ? this.post('browse', { browseId: 'FEmusic_new_releases' }) : Promise.resolve(null),
+      !params ? this.post('browse', { browseId: 'FEmusic_charts' }) : Promise.resolve(null),
       !params && (this.cookie || this.accessToken) ? this.getHistory() : Promise.resolve([]),
     ]);
 
@@ -193,6 +195,35 @@ export class InnertubeService {
       homeRaw.status === 'fulfilled'
         ? this.parseHome(homeRaw.value)
         : { shelves: [], continuation: null, chips: [] };
+
+    // Merge live dynamic shelves from new releases and charts (exact APK replication from YtMusicRepository.kt:58)
+    if (!params) {
+      const seenTitles = new Set(
+        homeFeed.shelves.map((s) => (s.title || '').trim().toLowerCase())
+      );
+
+      if (newReleasesRaw.status === 'fulfilled' && newReleasesRaw.value) {
+        const nrShelves = this.parseShelves(newReleasesRaw.value);
+        for (const shelf of nrShelves) {
+          const norm = (shelf.title || '').trim().toLowerCase();
+          if (norm && !seenTitles.has(norm) && shelf.items.length > 0) {
+            seenTitles.add(norm);
+            homeFeed.shelves.push(shelf);
+          }
+        }
+      }
+
+      if (chartsRaw.status === 'fulfilled' && chartsRaw.value) {
+        const chartShelves = this.parseShelves(chartsRaw.value);
+        for (const shelf of chartShelves) {
+          const norm = (shelf.title || '').trim().toLowerCase();
+          if (norm && !seenTitles.has(norm) && shelf.items.length > 0) {
+            seenTitles.add(norm);
+            homeFeed.shelves.push(shelf);
+          }
+        }
+      }
+    }
 
     // Ensure chips are available
     if (!homeFeed.chips || homeFeed.chips.length === 0) {
@@ -319,12 +350,42 @@ export class InnertubeService {
     const body: Record<string, any> = { query };
     if (params) body.params = params;
 
-    const raw = await this.post('search', body);
-    return this.parseSearchResults(raw);
+    try {
+      const raw = await this.post('search', body);
+      const results = this.parseSearchResults(raw);
+      if (results && results.length > 0) {
+        return results;
+      }
+    } catch (err) {
+      console.warn('Innertube search failed, activating multi-provider fallback:', err);
+    }
+
+    // High-speed fallback: JioSaavn search (unblocked, full metadata & 320kbps streams)
+    try {
+      const { jioSaavnService } = await import('./jiosaavn');
+      const saavnResults = await jioSaavnService.search(query);
+      if (saavnResults && saavnResults.length > 0) {
+        return saavnResults.map((s) => ({
+          type: 'Track' as const,
+          song: {
+            videoId: s.id,
+            title: s.title,
+            artist: s.artist,
+            thumbnailUrl: s.image || '/logo.svg',
+            duration: 0,
+            has320: true,
+          },
+        }));
+      }
+    } catch (sErr) {
+      console.warn('JioSaavn search fallback failed:', sErr);
+    }
+
+    return [];
   }
 
   /**
-   * Search Query Auto-Suggestions
+   * Search Query Auto-Suggestions with public Google/YT autocomplete fallback
    */
   public async getSearchSuggestions(query: string): Promise<string[]> {
     try {
@@ -346,10 +407,25 @@ export class InnertubeService {
           suggestions.push(cleaned);
         }
       }
-      return suggestions;
+      if (suggestions.length > 0) return suggestions;
     } catch {
-      return [];
+      // Fallback below
     }
+
+    // Fallback: Public Google / YouTube Suggest API (CORS-friendly, zero rate limits)
+    try {
+      const res = await fetch(
+        `https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=${encodeURIComponent(query)}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.[1])) {
+          return data[1].slice(0, 8);
+        }
+      }
+    } catch {}
+
+    return [];
   }
 
   /**
@@ -359,10 +435,31 @@ export class InnertubeService {
     try {
       const raw = await this.post('search', { query });
       const results = this.parseSearchResults(raw);
-      return results.slice(0, 5);
-    } catch {
-      return [];
-    }
+      if (results && results.length > 0) {
+        return results.slice(0, 5);
+      }
+    } catch {}
+
+    // Fallback: JioSaavn typeahead
+    try {
+      const { jioSaavnService } = await import('./jiosaavn');
+      const saavnResults = await jioSaavnService.search(query);
+      if (saavnResults && saavnResults.length > 0) {
+        return saavnResults.slice(0, 5).map((s) => ({
+          type: 'Track' as const,
+          song: {
+            videoId: s.id,
+            title: s.title,
+            artist: s.artist,
+            thumbnailUrl: s.image || '/logo.svg',
+            duration: 0,
+            has320: true,
+          },
+        }));
+      }
+    } catch {}
+
+    return [];
   }
 
   /**

@@ -548,27 +548,9 @@ export const NowPlayingScreen: React.FC<NowPlayingScreenProps> = ({
         darkBase={palette.darkBase || '#08070d'}
       />
 
-      {/* 2. Full-Screen Ambient Artwork Diffusion (runs edge-to-edge all the way to bottom) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <img
-          src={artworkUrl}
-          alt=""
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover blur-3xl scale-125 opacity-45 brightness-95 saturate-180 transition-all duration-1000"
-        />
-        {/* Subtle vertical contrast gradient matching native MeshGradient:199-205 */}
-        <div
-          className="absolute inset-0 transition-colors duration-1000"
-          style={{
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 40%, rgba(0,0,0,0.15) 70%, rgba(5,5,8,0.55) 100%)',
-          }}
-        />
-      </div>
-
-      {/* 3. Hero Full-Bleed Artwork: Edge-to-edge at top, dissolving smoothly into ambient backdrop (HERO_FADE_FRACTION = 0.42) */}
+      {/* 2. Hero Full-Bleed Artwork: Edge-to-edge at top, dissolving smoothly into ambient backdrop (matching native NowPlayingScreen.kt HERO_FADE_FRACTION) */}
       {nowPlayingTab === 'PLAYER' && (
-        <div className="absolute top-0 left-0 right-0 h-[68vh] sm:h-[72vh] max-h-[640px] overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-0 left-0 right-0 h-[62vh] sm:h-[64vh] overflow-hidden pointer-events-none z-0">
           <img
             src={artworkUrl}
             alt={currentSong.title}
@@ -581,15 +563,23 @@ export const NowPlayingScreen: React.FC<NowPlayingScreenProps> = ({
             }`}
             style={{
               maskImage:
-                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.88) 60%, rgba(0,0,0,0.65) 72%, rgba(0,0,0,0.35) 85%, rgba(0,0,0,0.10) 95%, rgba(0,0,0,0) 100%)',
+                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,0.45) 78%, rgba(0,0,0,0.12) 90%, rgba(0,0,0,0) 100%)',
               WebkitMaskImage:
-                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.88) 60%, rgba(0,0,0,0.65) 72%, rgba(0,0,0,0.35) 85%, rgba(0,0,0,0.10) 95%, rgba(0,0,0,0) 100%)',
+                'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0.85) 62%, rgba(0,0,0,0.45) 78%, rgba(0,0,0,0.12) 90%, rgba(0,0,0,0) 100%)',
             }}
           />
           {/* Subtle top scrim for close button legibility */}
           <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/40 via-black/15 to-transparent pointer-events-none" />
         </div>
       )}
+
+      {/* 3. Smooth bottom blend scrim: Seamlessly blinds the screen down into darkBase (matching native Android player) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0 transition-colors duration-1000"
+        style={{
+          background: `linear-gradient(to bottom, transparent 25%, rgba(5,5,8,0.3) 55%, rgba(5,5,8,0.78) 80%, ${palette.darkBase || '#08070d'} 98%)`,
+        }}
+      />
 
       {/* 3. Foreground Content Container */}
       <div className="relative z-10 w-full max-w-md sm:max-w-lg mx-auto h-full flex flex-col justify-between px-6 sm:px-7 pt-2 pb-6">
