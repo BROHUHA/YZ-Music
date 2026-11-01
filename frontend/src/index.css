@@ -1,0 +1,267 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent-color: #FA2D48;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #030304;
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+/* 1. Global scrollbar suppression - eliminates all scroll guidelines and scroll tracks */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 2. Liquid Glass System */
+.liquid-glass {
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.12), 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+.liquid-glass-sidebar {
+  background: rgba(10, 10, 14, 0.65);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset -1px 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.liquid-glass-dock {
+  background: rgba(10, 10, 14, 0.70);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 1px 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.liquid-glass-topbar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+}
+
+.liquid-glass-card {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.liquid-glass-card:hover {
+  background: rgba(255, 255, 255, 0.065);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.18), 0 12px 28px -6px rgba(0, 0, 0, 0.4);
+}
+
+.liquid-glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.liquid-glass-pill:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: scale(1.02);
+}
+
+.liquid-glass-pill:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* 2. Liquid Glass System (Kyant0/backdrop & LiquidGlass.kt Native Specs) */
+.liquid-glass-surface,
+.liquid-glass-accessory,
+.liquid-glass-tabbar,
+.liquid-glass-circle {
+  background: linear-gradient(145deg, rgba(32, 28, 42, 0.82) 0%, rgba(14, 13, 20, 0.88) 100%) !important;
+  backdrop-filter: blur(36px) saturate(210%) brightness(95%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(210%) brightness(95%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.45), 
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.45), 
+    0 18px 48px -4px rgba(0, 0, 0, 0.85),
+    0 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Bottom Fade Scrim (Dissolves scrolling items smoothly above mobile navigation bar) */
+.bottom-fade-scrim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  z-index: 25;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  background: linear-gradient(to top, rgba(5, 5, 8, 0.94) 0%, rgba(5, 5, 8, 0.65) 45%, rgba(5, 5, 8, 0.15) 80%, transparent 100%);
+}
+
+/* 3. Top Fade Blur System (Direct mirror of TopFadeBlur.kt & FrostedTopBar.kt) */
+.top-fade-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 108px;
+  pointer-events: none;
+  z-index: 20;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
+  contain: paint;
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.96) 38%,
+    rgba(0, 0, 0, 0.65) 66%,
+    rgba(0, 0, 0, 0.20) 86%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.96) 38%,
+    rgba(0, 0, 0, 0.65) 66%,
+    rgba(0, 0, 0, 0.20) 86%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.top-fade-scrim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 108px;
+  pointer-events: none;
+  z-index: 21;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 8, 0.88) 0%,
+    rgba(5, 5, 8, 0.72) 38%,
+    rgba(5, 5, 8, 0.35) 66%,
+    rgba(5, 5, 8, 0.10) 86%,
+    rgba(5, 5, 8, 0) 100%
+  );
+}
+
+/* 4. Liquid Ambient Glow Backdrop */
+.ambient-glow-1 {
+  position: fixed;
+  top: -15%;
+  left: 20%;
+  width: 55vw;
+  height: 55vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 45, 72, 0.12) 0%, rgba(250, 45, 72, 0) 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: liquid-float-1 20s ease-in-out infinite alternate;
+}
+
+.ambient-glow-2 {
+  position: fixed;
+  bottom: -20%;
+  right: 15%;
+  width: 50vw;
+  height: 50vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, rgba(59, 130, 246, 0) 70%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  animation: liquid-float-2 25s ease-in-out infinite alternate;
+}
+
+@keyframes liquid-float-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 40px) scale(1.08); }
+  100% { transform: translate(40px, -20px) scale(0.95); }
+}
+
+@keyframes liquid-float-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(35px, -30px) scale(1.1); }
+  100% { transform: translate(-25px, 25px) scale(0.92); }
+}
+
+/* 4. Animated Soundwave Bars for Active Playing Track */
+@keyframes bar-bounce-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+@keyframes bar-bounce-2 {
+  0%, 100% { height: 14px; }
+  50% { height: 5px; }
+}
+@keyframes bar-bounce-3 {
+  0%, 100% { height: 8px; }
+  50% { height: 18px; }
+}
+
+.playing-eq-bar-1 {
+  animation: bar-bounce-1 0.8s ease-in-out infinite;
+}
+.playing-eq-bar-2 {
+  animation: bar-bounce-2 0.7s ease-in-out infinite 0.15s;
+}
+.playing-eq-bar-3 {
+  animation: bar-bounce-3 0.9s ease-in-out infinite 0.3s;
+}
+
+/* 5. Heart like animation */
+@keyframes like-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); }
+  75% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.animate-like {
+  animation: like-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 6. Custom range scrubber with fluid glow */
+input[type="range"]::-webkit-slider-thumb {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.3);
+  box-shadow: 0 0 12px rgba(250, 45, 72, 0.75);
+}

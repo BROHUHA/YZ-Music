@@ -50,3 +50,12 @@ generate_synthetic_history.js
 test_beat.onnx
 *.onnx
 app/src/test/java/com/music/yzmusic/CustomModuleValidationTest.kt
+
+
+# Node / Web Frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+temp_*.json
+.env*.local
