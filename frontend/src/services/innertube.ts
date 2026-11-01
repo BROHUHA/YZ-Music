@@ -1087,13 +1087,16 @@ export class InnertubeService {
 
     const responsiveItems = this.collectRenderers(json, 'musicResponsiveListItemRenderer');
     const multiRowItems = this.collectRenderers(json, 'musicMultiRowListItemRenderer');
-    const allItems = [...responsiveItems, ...multiRowItems];
+    const playlistVideoItems = this.collectRenderers(json, 'playlistVideoRenderer');
+    const playlistPanelItems = this.collectRenderers(json, 'playlistPanelVideoRenderer');
+    const allItems = [...responsiveItems, ...multiRowItems, ...playlistVideoItems, ...playlistPanelItems];
 
     const songs: Song[] = [];
     const seen = new Set<string>();
 
     for (const r of allItems) {
       const videoId =
+        r.videoId ||
         r.playlistItemData?.videoId ||
         r.overlay?.musicItemThumbnailOverlayRenderer?.content?.musicPlayButtonRenderer?.playNavigationEndpoint?.watchEndpoint?.videoId ||
         r.overlay?.musicItemThumbnailOverlayRenderer?.content?.musicPlayButtonRenderer?.playNavigationEndpoint?.watchPlaylistEndpoint?.videoId ||
